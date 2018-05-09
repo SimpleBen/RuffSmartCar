@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width,minimum-scale=0.8,maximum-scale=0.8,user-scalable=no" />
+    <title>Car Control</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="jquery.min.css"></script>
+    <script>
+	    var host = "http://192.168.78.1:8008";
+	    var currents = "stop";
+	    
+	    //方向控制
+	    function control(dirs){
+			var xmlHttp = new XMLHttpRequest();
+			var tURL = host + '/' + dirs;
+			currents = dirs;
+			xmlHttp.open("GET", tURL, true);
+			xmlHttp.onreadystatechange = function () {
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+					console.log(dirs);	
+				}else{
+					console.log("error");
+				}
+			}
+			xmlHttp.send(null);
+	    }
+	    
+	    //传感器数据信息获取
+	    setInterval(function(){
+			var xmlHttp = new XMLHttpRequest();
+			var tURL = host + '/temp';
+			xmlHttp.open("GET", tURL, true);
+			xmlHttp.onreadystatechange = function () {
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+// 					document.getElementById("temp").innerHTML = this.responseText;
+					var json = eval("("+this.responseText+")");
+					$('.temp_n').html(json.temp);
+					$('.hum_n').html(json.hum);
+					$('.light_n').html(json.lux);
+					$('.hinder_n').html(json.dis);
+					
+					if(json.dis < 220 && (currents == "up" || currents == "right" || currents == "left")){
+						control('stop');
+						$(".hinder").addClass('warning');
+					}else if(json.dis < 300){
+						$(".hinder").addClass('warning');
+					}else{
+						$(".hinder").removeClass('warning');
+					}
+				}
+			}
+			xmlHttp.send(null);
+		}, 500);
+		
+    </script>
+</head>
+<body>
+	<div class="mes">
+		<div class="temp">
+			<p class="temp_c">温度(C)</p>
+			<p class="temp_n">加载中..</p>
+		</div>
+		<div class="hum">
+			<p class="hum_c">湿度(RH)</p>
+			<p class="hum_n">加载中..</p>
+		</div>
+		<div class="hinder">
+			<p class="hinder_c">障碍(cm)</p>
+			<p class="hinder_n">加载中..</p>
+		</div>
+		<div class="light">
+			<p class="light_c">光强(lux)</p>
+			<p class="light_n">加载中..</p>
+		</div>
+	</div>
+    <div class="container">
+	    <div class="up" onclick="control('up')">前进</div>
+		<div class="left" onclick="control('left')">左</div>
+		<div class="down" onclick="control('down')">后退</div>
+		<div class="right" onclick="control('right')">右</div>
+		<div class="stop" onclick="control('stop')">停止</div>
+    </div>
+</body>
+</html>

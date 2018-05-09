@@ -1,0 +1,17 @@
+{
+    "name": "car",
+    "version": "0.1.0",
+    "description": "AutoCar",
+    "author": "Ben",
+    "main": "src/index.js",
+    "ruff": {
+        "dependencies": {
+            "home": "^0.1.8",
+            "dht11": "^0.3.6",
+            "hg7881": "^1.1.1",
+            "gy-30": "^3.0.6",
+            "us-100": "^1.0.2"
+        },
+        "version": 1
+    }
+}
